@@ -1,0 +1,48 @@
+- name: Certbot Dependencies
+  ansible.builtin.apt:
+    name:
+      - python3 
+      - python3-dev 
+      - python3-venv 
+      - libaugeas-dev 
+      - gcc
+    state: "present"
+    update_cache: true
+
+- name: Install Certbot into venv
+  ansible.builtin.pip:
+    name:
+      - certbot
+      - certbot-nginx
+    virtualenv: /opt/certbot
+    virtualenv_command: python3 -m venv
+
+- name: Link certbot to PATH
+  ansible.builtin.file:
+    src: /opt/certbot/bin/certbot
+    dest: /usr/bin/certbot
+    state: link
+
+- name: Obtain certificate
+  ansible.builtin.command: >
+    certbot --nginx --non-interactive --agree-tos
+    -m {{ certbot_email }} -d {{ certbot_domain }}
+  args:
+    creates: "/etc/letsencrypt/live/{{ certbot_domain }}"
+
+- name: Add Job Renew Certificate
+  ansible.builtin.cron:
+    name: "certbot renew certificate"
+    minute: "0"
+    hour: "0,12"
+    user: root
+    job: "/opt/certbot/bin/python -c 'import random; import time; time.sleep(random.random() * 3600)' && certbot renew -q"
+
+- name: Add Job Update Certbot
+  ansible.builtin.cron:
+    name: "update certbot"
+    minute: "0"
+    hour: "3"
+    day: "1"
+    user: root
+    job: "/opt/certbot/bin/pip install --upgrade certbot certbot-nginx"

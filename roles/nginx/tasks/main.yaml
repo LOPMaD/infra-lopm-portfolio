@@ -1,0 +1,6 @@
+- name: Nginx initialization
+  ansible.builtin.import_tasks: init.yaml
+
+- name: Update config
+  ansible.builtin.import_tasks: uconf.yaml
+

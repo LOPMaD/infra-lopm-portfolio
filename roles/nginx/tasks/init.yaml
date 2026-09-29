@@ -1,0 +1,17 @@
+- name: Add Nginx repository
+  ansible.builtin.deb822_repository:
+    name: nginx
+    signed_by: https://nginx.org/keys/nginx_signing.key
+    uris: https://nginx.org/packages/mainline/ubuntu
+    suites: noble
+    components: nginx
+- name: Install Nginx
+  ansible.builtin.apt: 
+    name: nginx
+    state: "present"
+    update_cache: true
+
+- name: Enable service nginx
+  ansible.builtin.systemd_service:
+    name: nginx
+    state: started

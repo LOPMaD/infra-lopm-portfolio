@@ -1,0 +1,8 @@
+- name: Docker Install
+  ansible.builtin.apt:
+    name:
+      - docker.io
+      - docker-compose-v2
+    state: "present"
+    update_cache: true
+  notify: Enable docker service

@@ -8,13 +8,11 @@
 
     - name: Allow port 80
       community.general.ufw:
-        src: "{{admin_host_ip}}"
         rule: allow
         port: '80'
 
     - name: Allow port 443
       community.general.ufw:
-        src: "{{admin_host_ip}}"
         rule: allow
         port: '443'
   notify: 

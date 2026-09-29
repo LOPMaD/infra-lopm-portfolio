@@ -1,0 +1,57 @@
+- name: First Initialization Ansible User
+  hosts: vps
+  tasks:
+    - name: Create ansible user
+      ansible.builtin.user:
+        name: ansible
+        comment: Ansible User
+        groups: sudo
+        append: true
+        shell: /bin/bash
+    - name: Add SSH key for ansible user
+      ansible.posix.authorized_key:
+        user: ansible
+        key: "{{ lookup('file', '~/.ssh/id_ed25519.pub') }}"
+    - name: Add ansible user to sudoers.d
+      community.general.sudoers:
+        name: ansible
+        user: ansible
+        commands: ALL
+    
+- name: First Initialization VpsAdmin User
+  hosts: vps
+  tasks: 
+    - name: Create vpsadmin user
+      ansible.builtin.user:
+        name: vpsadmin
+        comment: VpsAdmin User
+        groups: sudo
+        append: true
+        shell: /bin/bash
+    - name: Add SSH key for vpsadmin user
+      ansible.posix.authorized_key:
+        user: vpsadmin
+        key: "{{ lookup('file', '~/.ssh/id_ed25519.pub') }}"
+    - name: Add vpsadmin user to sudoers.d
+      community.general.sudoers:
+        name: vpsadmin
+        user: vpsadmin
+        commands: ALL
+    
+- name: Initialization SSH
+  hosts: vps
+  tasks:    
+    - name: Disable remote SSH to root
+      ansible.builtin.lineinfile:
+        dest: /etc/ssh/sshd_config
+        regexp: '^PermitRootLogin'
+        line: "PermitRootLogin no"
+        state: present
+      notify:
+       - Restart ssh service
+  
+  handlers:
+   - name: Restart ssh service
+     ansible.builtin.systemd_service:
+       name: ssh
+       state: restarted

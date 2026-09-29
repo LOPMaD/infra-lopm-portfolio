@@ -1,0 +1,7 @@
+- hosts: vps
+  become: yes
+  roles:
+    - ufw
+    - nginx
+    - certbot
+    - docker

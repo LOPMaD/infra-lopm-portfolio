@@ -2,7 +2,6 @@
   block:
     - name: Allow port 22
       community.general.ufw:
-        src: "{{admin_host_ip}}"
         rule: allow
         port: '22'
 

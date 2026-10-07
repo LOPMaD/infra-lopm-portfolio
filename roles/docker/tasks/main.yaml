@@ -3,6 +3,7 @@
     name:
       - docker.io
       - docker-compose-v2
+      - docker-buildx
     state: "present"
     update_cache: true
   notify: Enable docker service

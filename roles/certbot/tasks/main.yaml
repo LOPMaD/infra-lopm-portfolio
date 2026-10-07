@@ -25,7 +25,7 @@
 
 - name: Obtain certificate
   ansible.builtin.command: >
-    certbot --nginx --non-interactive --agree-tos
+    certbot certonly --nginx --non-interactive --agree-tos
     -m {{ certbot_email }} -d {{ certbot_domain }}
   args:
     creates: "/etc/letsencrypt/live/{{ certbot_domain }}"

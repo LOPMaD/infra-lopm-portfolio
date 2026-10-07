@@ -4,4 +4,6 @@
     - ufw
     - nginx
     - certbot
+    - nginx_site
     - docker
+    - gitlab-runner

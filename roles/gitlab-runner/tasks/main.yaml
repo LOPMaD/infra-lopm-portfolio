@@ -1,0 +1,51 @@
+- name: Download gitlab-runner
+  ansible.builtin.get_url:
+    url: https://gitlab-runner-downloads.s3.amazonaws.com/latest/binaries/gitlab-runner-linux-amd64
+    dest: /usr/local/bin/gitlab-runner
+    mode: "0755"
+    force: true
+  notify: Restart gitlab-runner
+
+- name: Create user
+  ansible.builtin.user:
+    name: gitlab-runner
+    comment: GitLab Runner
+    shell: /bin/bash
+    create_home: true
+    groups: docker
+    append: true
+
+- name: Remove .bash_logout
+  ansible.builtin.file:
+    path: /home/gitlab-runner/.bash_logout
+    state: absent
+  notify: Restart gitlab-runner
+
+- name: Install service
+  ansible.builtin.command: gitlab-runner install --user=gitlab-runner --working-directory=/home/gitlab-runner
+  args:
+    creates: /etc/systemd/system/gitlab-runner.service
+
+- name: Check if runner is registered
+  ansible.builtin.command: grep -q '\[\[runners\]\]' /etc/gitlab-runner/config.toml
+  register: runner_check
+  changed_when: false
+  failed_when: runner_check.rc > 1
+
+- name: Register new runner
+  ansible.builtin.command: >
+    gitlab-runner register --non-interactive
+    --url https://gitlab.com
+    --token {{ runner_token }}
+    --executor shell
+    --name my-runner
+  when: runner_check.rc != 0
+  no_log: true
+
+  
+
+- name: Start service
+  ansible.builtin.service:
+    name: gitlab-runner
+    state: started
+    enabled: true

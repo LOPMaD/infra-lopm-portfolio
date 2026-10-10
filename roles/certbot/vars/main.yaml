@@ -1,2 +1,6 @@
 certbot_email: "artempaskan349@gmail.com"
-certbot_domain: "lopm.space"
+certbot_domains: 
+  - lopm.space
+  - www.lopm.space
+  - containers.lopm.space
+  - grafana.lopm.space

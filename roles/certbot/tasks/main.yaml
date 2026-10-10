@@ -25,10 +25,10 @@
 
 - name: Obtain certificate
   ansible.builtin.command: >
-    certbot certonly --nginx --non-interactive --agree-tos
-    -m {{ certbot_email }} -d {{ certbot_domain }}
+    certbot certonly --nginx --non-interactive --agree-tos --expand --cert-name lopm.space
+    -m {{ certbot_email }} -d {{ certbot_domains | join(' -d ') }}
   args:
-    creates: "/etc/letsencrypt/live/{{ certbot_domain }}"
+    creates: "/etc/letsencrypt/live/lopm.space"
 
 - name: Add Job Renew Certificate
   ansible.builtin.cron:

@@ -30,7 +30,7 @@ server {
 
 server {
     listen 443 ssl;
-    server_name todo.lopm.space;
+    server_name containers.lopm.space;
     http2 on;
 
     ssl_certificate     /etc/letsencrypt/live/lopm.space/fullchain.pem;
@@ -38,6 +38,20 @@ server {
 
     location / {
         proxy_pass http://127.0.0.1:5002;
+        proxy_set_header Host $host;
+    }
+}
+
+server {
+    listen 443 ssl;
+    server_name grafana.lopm.space;
+    http2 on;
+
+    ssl_certificate     /etc/letsencrypt/live/lopm.space/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/lopm.space/privkey.pem;
+
+    location / {
+        proxy_pass http://127.0.0.1:5003;
         proxy_set_header Host $host;
     }
 }
